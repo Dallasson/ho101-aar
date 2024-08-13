@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
@@ -67,24 +68,31 @@ class MainActivity : ComponentActivity() {
         val context = LocalContext.current
         val hasUsageStatsPermission = remember { mutableStateOf(hasUsageStatsPermission(context)) }
         val hasOverlayPermission = remember { mutableStateOf(hasOverlayPermission(context)) }
-        val hasNotificationPermission = remember { mutableStateOf(isNotificationPermissionGranted(context)) }
+        val hasNotificationPermission = remember {
+            mutableStateOf(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                isNotificationPermissionGranted(context)
+            } else {
+                true
+            })
+        }
         val isAccessibilityServiceEnabled = remember { mutableStateOf(isAccessibilityServiceEnabled(context, AppLockAccessibilityService::class.java)) }
 
-
-        val intent = Intent(this,AppLockService::class.java)
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+        val intent = Intent(this, AppLockService::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(intent)
         } else {
             startService(intent)
         }
 
-
         fun updatePermissionStatus() {
             hasUsageStatsPermission.value = hasUsageStatsPermission(context)
             hasOverlayPermission.value = hasOverlayPermission(context)
-            hasNotificationPermission.value = isNotificationPermissionGranted(context)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                hasNotificationPermission.value = isNotificationPermissionGranted(context)
+            }
             isAccessibilityServiceEnabled.value = isAccessibilityServiceEnabled(context, AppLockAccessibilityService::class.java)
         }
+
         val requestOverlayPermissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             updatePermissionStatus()
         }
@@ -98,48 +106,51 @@ class MainActivity : ComponentActivity() {
             updatePermissionStatus()
         }
 
-
         fun hasAllPermissions(): Boolean {
             return hasUsageStatsPermission.value && hasOverlayPermission.value && hasNotificationPermission.value && isAccessibilityServiceEnabled.value
         }
+
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             // Display permission rows
             PermissionRow(
-                label = "Overlay Permission",
+                label = stringResource(id = R.string.label_overlay_permission),
                 isGranted = hasOverlayPermission.value,
                 onClick = {
-                    val overLayIntent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}"))
+                    val overLayIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}"))
+                    } else {
+                        TODO("VERSION.SDK_INT < M")
+                    }
                     requestOverlayPermissionLauncher.launch(overLayIntent)
                 }
             )
             PermissionRow(
-                label = "Usage Access Permission",
+                label = stringResource(id = R.string.label_usage_access_permission),
                 isGranted = hasUsageStatsPermission.value,
                 onClick = {
                     val usageAccessIntent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
                     requestUsageStatsPermissionLauncher.launch(usageAccessIntent)
                 }
             )
-            PermissionRow(
-                label = "Notification Permission",
-                isGranted = hasNotificationPermission.value,
-                onClick = {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                PermissionRow(
+                    label = stringResource(id = R.string.label_notification_permission),
+                    isGranted = hasNotificationPermission.value,
+                    onClick = {
                         val i = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-                        intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                        i.putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
                         requestNotificationPermissionLauncher.launch(i)
                     }
-                }
-            )
+                )
+            }
             PermissionRow(
-                label = "Accessibility Permission",
+                label = stringResource(id = R.string.label_accessibility_permission),
                 isGranted = isAccessibilityServiceEnabled.value,
                 onClick = {
                     val i = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
                     requestAccessibilityPermissionLauncher.launch(i)
                 }
             )
-
 
             Spacer(modifier = Modifier.weight(1f))
 
@@ -153,22 +164,19 @@ class MainActivity : ComponentActivity() {
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.arrow),
-                    contentDescription = "Proceed to App List",
+                    contentDescription = stringResource(id = R.string.proceed_to_app_list),
                     modifier = Modifier
                         .clickable {
                             if (hasAllPermissions()) {
                                 navController.navigate("showAppList")
                             } else {
-                                Toast.makeText(context, "Please grant all permissions.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Please grant all permissions", Toast.LENGTH_SHORT).show()
                             }
                         }
                         .size(48.dp) // Adjust size as needed
-
                 )
             }
         }
-
-
     }
 
     @Composable
@@ -197,7 +205,11 @@ class MainActivity : ComponentActivity() {
         return mode == AppOpsManager.MODE_ALLOWED
     }
     private fun hasOverlayPermission(context: Context): Boolean {
-        return Settings.canDrawOverlays(context)
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Settings.canDrawOverlays(context)
+        } else {
+            TODO("VERSION.SDK_INT < M")
+        }
     }
     private fun isNotificationPermissionGranted(context: Context): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

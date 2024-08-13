@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">LockCompose</string>
+    <string name="label_overlay_permission">Overlay Permission</string>
+    <string name="label_usage_access_permission">Usage Access Permission</string>
+    <string name="label_notification_permission">Notification Permission</string>
+    <string name="label_accessibility_permission">Accessibility Permission</string>
+    <string name="proceed_to_app_list">Proceed to App List</string>
 </resources>
