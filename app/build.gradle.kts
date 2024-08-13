@@ -9,7 +9,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        //applicationId = "com.app.lockcompose"
+       // applicationId = "com.app.lockcompose"
         minSdk = 21
         targetSdk = 34
         //versionCode = 1

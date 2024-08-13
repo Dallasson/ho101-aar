@@ -60,8 +60,6 @@ import com.app.lockcompose.AppLockManager
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShowAppList() {
-
-
     val context = LocalContext.current
     val appLockManager = AppLockManager(context)
     val sharedPreferences = context.getSharedPreferences("AppLockPrefs", Context.MODE_PRIVATE)
@@ -73,10 +71,20 @@ fun ShowAppList() {
     val cardBackgroundColor = if (isDarkTheme) Color.DarkGray else Color.White
 
     val allApps = remember { getInstalledApps(context) }
-    var availableApps by remember { mutableStateOf(allApps.toMutableList()) }
-    var selectedApps by remember { mutableStateOf(allApps.filter {
-        it.packageName in (sharedPreferences.getStringSet("selected_package_names", emptySet()) ?: emptySet())
-    }.toMutableList()) }
+
+    var selectedApps by remember {
+        mutableStateOf(
+            allApps.filter {
+                it.packageName in (sharedPreferences.getStringSet("selected_package_names", emptySet()) ?: emptySet())
+            }.toMutableList()
+        )
+    }
+
+    var availableApps by remember {
+        mutableStateOf(
+            allApps.filter { it.packageName !in selectedApps.map { app -> app.packageName } }.toMutableList()
+        )
+    }
 
     var expanded by remember { mutableStateOf(false) }
     var selectedInterval by remember { mutableStateOf("") }
@@ -84,18 +92,17 @@ fun ShowAppList() {
 
     fun saveSelectedPackages() {
         val packageNames = selectedApps.map { it.packageName }.toSet()
-        appLockManager.addPackage(packageNames)
+        sharedPreferences.edit().putStringSet("selected_package_names", packageNames).apply()
     }
 
     DisposableEffect(Unit) {
-
         val updateReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 val updatedSelectedApps = allApps.filter {
                     it.packageName in (sharedPreferences.getStringSet("selected_package_names", emptySet()) ?: emptySet())
                 }
                 selectedApps = updatedSelectedApps.toMutableList()
-                availableApps = allApps.filter { it.packageName !in updatedSelectedApps.map { app -> app.packageName } }.toMutableList()
+                availableApps = allApps.filter { it.packageName !in selectedApps.map { app -> app.packageName } }.toMutableList()
             }
         }
 
@@ -114,7 +121,6 @@ fun ShowAppList() {
     Column(
         modifier = Modifier.background(backgroundColor)
     ) {
-
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = it },
@@ -152,7 +158,6 @@ fun ShowAppList() {
                 }
             }
         }
-
 
         // Selected Apps List
         Text(
