@@ -10,7 +10,7 @@ import android.view.accessibility.AccessibilityEvent
 class AppLockAccessibilityService : AccessibilityService() {
 
     companion object {
-        private const val TAG = "AppLockAccessibilityService"
+        private const val TAG = "AppLockAccessibility"
     }
 
     override fun onServiceConnected() {
