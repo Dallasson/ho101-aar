@@ -1,0 +1,16 @@
+<!-- res/layout/dialog_custom.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#E60808"
+    android:padding="16dp">
+
+    <!-- Add your dialog content here -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="This is a custom dialog"
+        android:textSize="18sp" />
+
+</LinearLayout>
