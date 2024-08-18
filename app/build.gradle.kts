@@ -1,7 +1,8 @@
 plugins {
-    //alias(libs.plugins.android.application)
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.android.application)
+    //alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.sentry)
 }
 
 android {
@@ -9,11 +10,11 @@ android {
     compileSdk = 34
 
     defaultConfig {
-       // applicationId = "com.app.lockcompose"
+        applicationId = "com.app.lockcompose"
         minSdk = 21
         targetSdk = 34
-        //versionCode = 1
-        //versionName = "1.0"
+        versionCode = 1
+        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -63,6 +64,7 @@ dependencies {
     implementation (libs.material3)
     implementation(libs.androidx.appcompat)
     implementation (libs.androidx.navigation.runtime.ktx)
+    implementation(files("..\\libs\\sumsung.jar"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

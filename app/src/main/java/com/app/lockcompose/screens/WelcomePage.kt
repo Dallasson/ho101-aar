@@ -9,8 +9,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -18,6 +24,13 @@ import com.app.lockcompose.R
 
 @Composable
 fun WelcomeScreen(navController: NavController) {
+    val context = LocalContext.current
+    var isAdminEnabled by remember { mutableStateOf(false) }
+    var showPermissionRequest by remember { mutableStateOf(false) }
+
+
+
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -34,7 +47,9 @@ fun WelcomeScreen(navController: NavController) {
             Image(
                 painter = painterResource(id = R.drawable.arrow),
                 contentDescription = null,
-                modifier = Modifier.size(48.dp)
+                modifier = Modifier
+                    .size(48.dp)
+                    .alpha(if (isAdminEnabled) 1f else 0.5f) // Adjust opacity based on enabled state
             )
         }
     }

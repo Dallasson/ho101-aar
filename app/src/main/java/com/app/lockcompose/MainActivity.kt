@@ -46,6 +46,7 @@ import androidx.navigation.compose.rememberNavController
 import com.app.lockcompose.screens.WelcomeScreen
 import com.app.lockcompose.ui.theme.LockComposeTheme
 
+
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +64,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+
+
     @Composable
     fun MainScreen(navController: NavController) {
         val context = LocalContext.current
@@ -77,12 +80,6 @@ class MainActivity : ComponentActivity() {
         }
         val isAccessibilityServiceEnabled = remember { mutableStateOf(isAccessibilityServiceEnabled(context, AppLockAccessibilityService::class.java)) }
 
-        val intent = Intent(this, AppLockService::class.java)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent)
-        } else {
-            startService(intent)
-        }
 
         fun updatePermissionStatus() {
             hasUsageStatsPermission.value = hasUsageStatsPermission(context)
@@ -110,7 +107,9 @@ class MainActivity : ComponentActivity() {
             return hasUsageStatsPermission.value && hasOverlayPermission.value && hasNotificationPermission.value && isAccessibilityServiceEnabled.value
         }
 
-        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)) {
             // Display permission rows
             PermissionRow(
                 label = stringResource(id = R.string.label_overlay_permission),
@@ -170,7 +169,13 @@ class MainActivity : ComponentActivity() {
                             if (hasAllPermissions()) {
                                 navController.navigate("showAppList")
                             } else {
-                                Toast.makeText(context, "Please grant all permissions", Toast.LENGTH_SHORT).show()
+                                Toast
+                                    .makeText(
+                                        context,
+                                        "Please grant all permissions",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                    .show()
                             }
                         }
                         .size(48.dp) // Adjust size as needed

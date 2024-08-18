@@ -53,7 +53,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.app.lockcompose.AppLockManager
 
 
 @SuppressLint("UnspecifiedRegisterReceiverFlag")
@@ -61,7 +60,6 @@ import com.app.lockcompose.AppLockManager
 @Composable
 fun ShowAppList() {
     val context = LocalContext.current
-    val appLockManager = AppLockManager(context)
     val sharedPreferences = context.getSharedPreferences("AppLockPrefs", Context.MODE_PRIVATE)
 
     val isDarkTheme = isSystemInDarkTheme()
@@ -108,7 +106,7 @@ fun ShowAppList() {
 
         val filter = IntentFilter("UPDATE_APP_LIST")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            context.registerReceiver(updateReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+            context.registerReceiver(updateReceiver, filter, Context.RECEIVER_EXPORTED)
         } else {
             context.registerReceiver(updateReceiver, filter)
         }

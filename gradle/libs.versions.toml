@@ -12,7 +12,7 @@ appcompat = "1.7.0"
 material3 = "1.2.1"
 navigationCompose = "2.7.7"
 navigationRuntimeKtx = "2.7.7"
-sentry = "4.10.0"
+sentry = "4.11.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -38,8 +38,10 @@ material3 = { module = "androidx.compose.material3:material3", version.ref = "ma
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-android-library = { id = "com.android.library", version.ref = "agp" }
+#android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+sentry = { id = "io.sentry.android.gradle", version.ref = "sentry" }
+
 
 
 
