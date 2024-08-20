@@ -39,16 +39,6 @@
             </intent-filter>
         </activity>
 
-
-
-        <!-- Required: set your sentry.io project identifier (DSN) -->
-        <meta-data android:name="io.sentry.dsn" android:value="https://40bdf4f83dfa31d49836fc04a0cb23f2@o4506700413796352.ingest.us.sentry.io/4507663051522048" />
-        <!-- enable the performance API by setting a sample-rate, adjust in production env -->
-        <meta-data android:name="io.sentry.traces.sample-rate" android:value="1.0" />
-        <!-- enable profiling when starting transactions, adjust in production env -->
-        <meta-data android:name="io.sentry.traces.profiling.sample-rate" android:value="1.0" />
-
-
         <service
             android:name=".AppLockAccessibilityService"
             android:exported="true"
