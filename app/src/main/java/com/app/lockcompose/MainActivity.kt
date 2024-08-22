@@ -71,22 +71,12 @@ class MainActivity : ComponentActivity() {
         val context = LocalContext.current
         val hasUsageStatsPermission = remember { mutableStateOf(hasUsageStatsPermission(context)) }
         val hasOverlayPermission = remember { mutableStateOf(hasOverlayPermission(context)) }
-        val hasNotificationPermission = remember {
-            mutableStateOf(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                isNotificationPermissionGranted(context)
-            } else {
-                true
-            })
-        }
         val isAccessibilityServiceEnabled = remember { mutableStateOf(isAccessibilityServiceEnabled(context, AppLockAccessibilityService::class.java)) }
 
 
         fun updatePermissionStatus() {
             hasUsageStatsPermission.value = hasUsageStatsPermission(context)
             hasOverlayPermission.value = hasOverlayPermission(context)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                hasNotificationPermission.value = isNotificationPermissionGranted(context)
-            }
             isAccessibilityServiceEnabled.value = isAccessibilityServiceEnabled(context, AppLockAccessibilityService::class.java)
         }
 
@@ -96,15 +86,12 @@ class MainActivity : ComponentActivity() {
         val requestUsageStatsPermissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             updatePermissionStatus()
         }
-        val requestNotificationPermissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            updatePermissionStatus()
-        }
         val requestAccessibilityPermissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             updatePermissionStatus()
         }
 
         fun hasAllPermissions(): Boolean {
-            return hasUsageStatsPermission.value && hasOverlayPermission.value && hasNotificationPermission.value && isAccessibilityServiceEnabled.value
+            return hasUsageStatsPermission.value && hasOverlayPermission.value && isAccessibilityServiceEnabled.value
         }
 
         Column(modifier = Modifier
@@ -131,17 +118,6 @@ class MainActivity : ComponentActivity() {
                     requestUsageStatsPermissionLauncher.launch(usageAccessIntent)
                 }
             )
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                PermissionRow(
-                    label = stringResource(id = R.string.label_notification_permission),
-                    isGranted = hasNotificationPermission.value,
-                    onClick = {
-                        val i = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-                        i.putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-                        requestNotificationPermissionLauncher.launch(i)
-                    }
-                )
-            }
             PermissionRow(
                 label = stringResource(id = R.string.label_accessibility_permission),
                 isGranted = isAccessibilityServiceEnabled.value,

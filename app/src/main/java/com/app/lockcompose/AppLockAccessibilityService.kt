@@ -39,12 +39,15 @@ class AppLockAccessibilityService : AccessibilityService() {
 
     override fun onServiceConnected() {
         super.onServiceConnected()
-
+        //Toast.makeText(this,"onServiceConnected",Toast.LENGTH_LONG).show()
         appLockManager = AppLockManager(this)
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
         val info = AccessibilityServiceInfo().apply {
             eventTypes = AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
+            feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC
+            flags = AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
+            packageNames = null
         }
         this.serviceInfo = info
     }
@@ -58,6 +61,7 @@ class AppLockAccessibilityService : AccessibilityService() {
         val lockedPackages = appLockManager.getSelectedPackages()
 
         if (packageName in lockedPackages) {
+            Toast.makeText(this,"",Toast.LENGTH_LONG).show()
             showPartialOverlay(packageName)
         }
     }
@@ -86,6 +90,7 @@ class AppLockAccessibilityService : AccessibilityService() {
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON ,
                 PixelFormat.TRANSPARENT
             )
+
 
             overlayView = overlayLayout
             windowManager.addView(overlayView, layoutParams)
@@ -167,8 +172,6 @@ class AppLockAccessibilityService : AccessibilityService() {
             }
             false
         }
-
-
 
     }
 
